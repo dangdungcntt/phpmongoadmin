@@ -3,22 +3,25 @@
 namespace App\Http\Livewire;
 
 use App\Models\Connection;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use MongoDB\Driver\Cursor;
 use MongoDB\Model\BSONArray;
 use MongoDB\Model\BSONDocument;
-use Nddcoder\SqlToMongodbQuery\Model\FindQuery;
 use Nddcoder\SqlToMongodbQuery\SqlToMongodbQuery;
 
 class SqlResult extends Component
 {
+    const MAX_RESULT = 1000;
+
     public string $sql = '';
     public ?string $error = null;
     public ?string $viewColumn = null;
     public int $connectionId;
     public string $database;
+    public string $collectionName;
 
-    protected $listeners = ['execute' => 'execute'];
+    protected $listeners = ['execute'];
 
     protected $queryString = ['sql', 'viewColumn'];
 
@@ -36,52 +39,56 @@ class SqlResult extends Component
     {
         try {
             /** @var Connection $connection */
-            $connection = Connection::query()->findOrFail($this->connectionId);
-            $query      = (new SqlToMongodbQuery())->parse($this->sql);
-            $collection = $connection->getMongoClient()
-                ->selectDatabase($this->database)
-                ->selectCollection($query->collection);
-            $data       = $query instanceof FindQuery ? $collection->find(
-                $query->filter,
-                array_merge(
-                    $query->getOptions(),
-                    [
-                        'limit' => $query->limit ?: 50
-                    ]
-                )
-            ) : $collection->aggregate(
-                $query->pipelines,
-                $query->getOptions()
+            $connection           = Connection::query()->findOrFail($this->connectionId);
+            $query                = (new SqlToMongodbQuery())->parse($this->sql);
+            $this->collectionName = $query->collection;
+            $data                 = $connection->execute($query, $this->database);
+
+            [$columns, $results] = $this->extractData(
+                $data,
+                $docId = 'doc_'.Str::random('5').'_id',
+                self::MAX_RESULT
             );
-            [$columns, $results] = $this->extractData($data);
 
-            $breadcrumbs = [];
+            $breadcrumbs = empty($this->viewColumn) ? [] : explode('.', $this->viewColumn);
 
-            if (!empty($this->viewColumn)) {
-                $breadcrumbs = explode('.', $this->viewColumn);
-            }
-
-            $collectionName = $query->collection;
-
-            return view('livewire.sql-result', compact('columns', 'results', 'breadcrumbs', 'collectionName'));
+            return view(
+                'livewire.sql-result',
+                compact(
+                    'columns',
+                    'results',
+                    'docId',
+                    'breadcrumbs',
+                )
+            );
         } catch (\Exception $exception) {
             $this->error = $exception::class.' '.$exception->getMessage();
         }
 
-        return view('livewire.sql-result', compact('data'));
+        return view('livewire.sql-result');
     }
 
-    protected function extractData(Cursor $data)
+    protected function extractData(Cursor $data, string $docId, int $maxResult)
     {
-        $columns = [
-            '_id' => 'default'
-        ];
+        $columns = [];
+
+        if ($this->viewColumn && !str_starts_with($this->viewColumn, '_id')) {
+            $columns[$docId] = 'default';
+        }
+
         $results = [];
-        foreach ($data as $item) {
-            $row = [
-                '_id' => data_get($item, '_id')
-            ];
+
+        foreach ($data as $index => $item) {
+            if ($index >= $maxResult) {
+                break;
+            }
+
+            $row = [];
+
             if (!empty($this->viewColumn)) {
+                if (isset($item['_id'])) {
+                    $row[$docId] = $item['_id'];
+                }
                 $item = data_get($item, $this->viewColumn) ?? [];
             }
 
@@ -91,12 +98,12 @@ class SqlResult extends Component
             }
 
             foreach ($item as $field => $value) {
-                $row[$field]     = match (true) {
-                    $value instanceof BSONArray => '['.$value->count().' elements]',
+                $row[$field] = match (true) {
+                    $value instanceof BSONArray => '['.$value->count().' items]',
                     $value instanceof BSONDocument => '{'.$value->count().' fields}',
                     default => $value
                 };
-                $type = match (true) {
+                $type        = match (true) {
                     $value instanceof BSONArray => 'array',
                     $value instanceof BSONDocument => 'object',
                     default => 'default'
@@ -108,6 +115,7 @@ class SqlResult extends Component
             }
             $results[] = $row;
         }
+
         return [$columns, $results];
     }
 }

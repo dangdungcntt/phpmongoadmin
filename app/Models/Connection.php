@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Cache;
 use MongoDB\Client;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\DatabaseInfo;
+use Nddcoder\SqlToMongodbQuery\Model\FindQuery;
+use Nddcoder\SqlToMongodbQuery\Model\Query;
 
 /**
  * @property int id
@@ -53,11 +55,32 @@ class Connection extends Model
                                                 'name' => $collectionInfo->getName(),
                                             ];
                                         }
-                                    )->toArray()
+                                    )
+                                    ->sortBy('name')
                             ];
                         }
-                    );
+                    )
+                    ->sortBy('name');
             }
+        );
+    }
+
+    public function execute(Query $query, string $database, int $defaultLimit = 50)
+    {
+        $collection = $this->getMongoClient()
+            ->selectDatabase($database)
+            ->selectCollection($query->collection);
+        return $query instanceof FindQuery ? $collection->find(
+            $query->filter,
+            array_merge(
+                $query->getOptions(),
+                [
+                    'limit' => $query->limit ?: $defaultLimit
+                ]
+            )
+        ) : $collection->aggregate(
+            $query->pipelines,
+            $query->getOptions()
         );
     }
 }
