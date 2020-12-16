@@ -35,12 +35,6 @@
                     let sql = editor.getSelection() || editor.getLine(editor.getCursor().line) || editor.getValue();
                     Livewire.emitTo('sql-result', 'execute', sql)
                 }
-            },
-            hintOptions: {
-                tables: {
-                    users: ["name", "score", "birthDate"],
-                    countries: ["name", "population", "size"]
-                }
             }
         });
     </script>
