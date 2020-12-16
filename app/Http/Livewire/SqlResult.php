@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Models\Connection;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Model\BSONArray;
 use MongoDB\Model\BSONDocument;
 use Nddcoder\ObjectMapper\ObjectMapper;
@@ -117,6 +118,7 @@ class SqlResult extends Component
                 $row[$field] = match (true) {
                     $value instanceof BSONArray => '['.$value->count().' items]',
                     $value instanceof BSONDocument => '{'.$value->count().' fields}',
+                    $value instanceof UTCDateTime => $value->toDateTime()->format(DATE_RFC3339_EXTENDED),
                     is_bool($value) => $value ? 'true' : 'false',
                     default => $value
                 };

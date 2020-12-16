@@ -29,7 +29,6 @@ class BsonHelper
             };
             $result .= $pad.($isArray ? '' : "\"$field\": ").$s.','.PHP_EOL;
         }
-        $result .= substr($pad, 4).$close;
-        return $result;
+        return rtrim($result, " ,\n\r").PHP_EOL.substr($pad, 4).$close;
     }
 }
