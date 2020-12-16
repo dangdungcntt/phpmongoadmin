@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\EncryptableDbAttribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use MongoDB\Client;
@@ -17,8 +18,14 @@ use Nddcoder\SqlToMongodbQuery\Model\Query;
  */
 class Connection extends Model
 {
+    use EncryptableDbAttribute;
+
     protected $table = 'connections';
     protected $guarded = [];
+
+    protected array $encryptable = [
+        'uri',
+    ];
 
     public function getMongoClient(): Client
     {
