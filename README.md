@@ -48,3 +48,9 @@ Requirements
 Run this project as normal Laravel application.
 
 Read [Laravel docs](https://laravel.com/docs/8.x)
+
+## Screenshots
+
+![](docs/screenshots/01.png)
+
+![](docs/screenshots/02.png)
