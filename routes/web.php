@@ -17,6 +17,7 @@ Route::prefix('connections')
 
             Route::middleware([ShareCurrentConnection::class])->group(
                 function () {
+                    Route::get('{connection}/favicon', [ConnectionController::class, 'getFavicon'])->name('connections.favicon');
                     Route::get('{connection}', [ConnectionController::class, 'show'])->name('connections.show');
                     Route::get('{connection}/databases/{database}', ShowSqlEditorController::class)->name('sql-editor');
                     Route::get('{connection}/databases/{database}/collections/{collection}', ShowSqlEditorController::class)->name(

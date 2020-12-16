@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page_title', $currentConnection->name . ': ' . $currentDatabase . (isset($currentCollection) ? '.'. $currentCollection : ''))
+
 @include('partials.connection-databases')
 
 @push('content')
@@ -11,6 +13,7 @@
 @endpush
 
 @push('styles')
+    <link rel="icon" href="{{ route('connections.favicon', $currentConnection) }}" type="image/png" sizes="20x20">
     <link rel="stylesheet" href="{{ asset('codemirror/lib/codemirror.css') }}">
     <link rel="stylesheet" href="{{ asset('codemirror/addon/hint/show-hint.css') }}">
 @endpush

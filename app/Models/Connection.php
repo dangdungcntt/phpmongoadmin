@@ -70,12 +70,24 @@ class Connection extends Model
         );
     }
 
-    public function execute(Query $query, string $database, int $defaultLimit = 50)
-    {
-        $collection = $this->getMongoClient()
+    public function execute(
+        Query $query,
+        string $database,
+        bool $shouldCache = false,
+        int $defaultLimit = 50,
+        int $hardLimit = 1000
+    ) {
+        $cacheKey = md5("$this->id|$database|$query->collection|".json_encode($query));
+
+        if ($shouldCache && $cachedData = Cache::get($cacheKey)) {
+            return $cachedData;
+        }
+
+        $mongoCollection = $this->getMongoClient()
             ->selectDatabase($database)
             ->selectCollection($query->collection);
-        return $query instanceof FindQuery ? $collection->find(
+
+        $cursor = $query instanceof FindQuery ? $mongoCollection->find(
             $query->filter,
             array_merge(
                 $query->getOptions(),
@@ -83,9 +95,24 @@ class Connection extends Model
                     'limit' => $query->limit ?: $defaultLimit
                 ]
             )
-        ) : $collection->aggregate(
+        ) : $mongoCollection->aggregate(
             $query->pipelines,
             $query->getOptions()
         );
+
+        $data = [];
+        foreach ($cursor as $index => $item) {
+            if ($index >= $hardLimit) {
+                break;
+            }
+
+            $data[] = $item;
+        }
+
+        if ($shouldCache) {
+            Cache::put($cacheKey, $data, 60);
+        }
+
+        return $data;
     }
 }

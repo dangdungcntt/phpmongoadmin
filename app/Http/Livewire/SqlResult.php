@@ -5,9 +5,9 @@ namespace App\Http\Livewire;
 use App\Models\Connection;
 use Illuminate\Support\Str;
 use Livewire\Component;
-use MongoDB\Driver\Cursor;
 use MongoDB\Model\BSONArray;
 use MongoDB\Model\BSONDocument;
+use Nddcoder\ObjectMapper\ObjectMapper;
 use Nddcoder\SqlToMongodbQuery\SqlToMongodbQuery;
 
 class SqlResult extends Component
@@ -17,17 +17,25 @@ class SqlResult extends Component
     public string $sql = '';
     public ?string $error = null;
     public ?string $viewColumn = null;
+    public string $viewType = 'table';
     public int $connectionId;
     public string $database;
     public string $collectionName;
+    public bool $executed = false;
 
     protected $listeners = ['execute'];
 
-    protected $queryString = ['sql', 'viewColumn'];
+    protected $queryString = ['sql', 'viewColumn', 'viewType'];
+
+    public function changeViewType(string $newViewType)
+    {
+        $this->viewType = $newViewType;
+    }
 
     public function execute(string $sql)
     {
-        $this->sql = $sql;
+        $this->executed = false;
+        $this->sql      = $sql;
     }
 
     public function viewColumn(string $column)
@@ -42,23 +50,35 @@ class SqlResult extends Component
             $connection           = Connection::query()->findOrFail($this->connectionId);
             $query                = (new SqlToMongodbQuery())->parse($this->sql);
             $this->collectionName = $query->collection;
-            $data                 = $connection->execute($query, $this->database);
-
-            [$columns, $results] = $this->extractData(
-                $data,
-                $docId = 'doc_'.Str::random('5').'_id',
-                self::MAX_RESULT
+            $data                 = $connection->execute(
+                query: $query,
+                database: $this->database,
+                shouldCache: $this->executed,
+                hardLimit: self::MAX_RESULT
             );
+            $this->executed       = true;
 
             $breadcrumbs = empty($this->viewColumn) ? [] : explode('.', $this->viewColumn);
+            $columns     = [];
+            $docId       = 'doc_'.Str::random('5').'_id';
+
+            if ($this->viewType == 'table') {
+                [$columns, $data] = $this->extractData(
+                    $data,
+                    $docId
+                );
+            }
+
+            $objectMapper = new ObjectMapper();
 
             return view(
                 'livewire.sql-result',
                 compact(
                     'columns',
-                    'results',
+                    'data',
                     'docId',
                     'breadcrumbs',
+                    'objectMapper'
                 )
             );
         } catch (\Exception $exception) {
@@ -68,7 +88,7 @@ class SqlResult extends Component
         return view('livewire.sql-result');
     }
 
-    protected function extractData(Cursor $data, string $docId, int $maxResult)
+    protected function extractData(array $data, string $docId)
     {
         $columns = [];
 
@@ -79,10 +99,6 @@ class SqlResult extends Component
         $results = [];
 
         foreach ($data as $index => $item) {
-            if ($index >= $maxResult) {
-                break;
-            }
-
             $row = [];
 
             if (!empty($this->viewColumn)) {
@@ -101,6 +117,7 @@ class SqlResult extends Component
                 $row[$field] = match (true) {
                     $value instanceof BSONArray => '['.$value->count().' items]',
                     $value instanceof BSONDocument => '{'.$value->count().' fields}',
+                    is_bool($value) => $value ? 'true' : 'false',
                     default => $value
                 };
                 $type        = match (true) {

@@ -5,13 +5,18 @@
         </div>
     @endif
 
+    <div class="input-group mb-2">
+        <button wire:click="changeViewType('table')" class="btn btn-sm {{ $viewType == 'table' ? 'btn-primary' : 'btn-light' }}">Table View</button>
+        <button wire:click="changeViewType('json')" class="btn btn-sm {{ $viewType == 'json' ? 'btn-primary' : 'btn-light' }}">Json View</button>
+    </div>
+
     <div wire:loading>
         Executing...
     </div>
 
-    @isset($results)
+    @isset($data)
         <div wire:loading.remove>
-            <p class="mb-2"><strong>Results: showing {{ count($results) }} row(s)</strong></p>
+            <p class="mb-2"><strong>Results: showing {{ count($data) }} row(s)</strong></p>
             <p>
                 <strong>{{ $database }}</strong> >
                 @if(empty($breadcrumbs))
@@ -33,33 +38,42 @@
                     @php($breadcrumbPrefix .= '.')
                 @endforeach
             </p>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover">
-                    <thead>
-                    <tr>
-                        @foreach($columns as $field => $type)
-                            <th>{{ $field == $docId ? '{Document id}' : $field }}
-                                @if($type != 'default')
-                                    <a href="#" type="button"
-                                       class="btn btn-sm btn-link"
-                                       wire:click.prevent="viewColumn('{{ $viewColumn ? "$viewColumn.$field" : $field }}')">view
-                                    </a>
-                                @endif
-                            </th>
-                        @endforeach
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($results as $row)
+            @if($viewType == 'json')
+                <div>
+                    @foreach($data as $row)
+                        <pre>{{ \App\Helpers\BsonHelper::encode($row) }}</pre>
+                        //-----------------------------------------<br><br>
+                    @endforeach
+                </div>
+            @else
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
                         <tr>
-                            @foreach($columns as $field => $_)
-                                <td>{{ $row[$field] ?? '' }}</td>
+                            @foreach($columns as $field => $type)
+                                <th>{{ $field == $docId ? '{Document id}' : $field }}
+                                    @if($type != 'default')
+                                        <a href="#" type="button"
+                                           class="btn btn-sm btn-link"
+                                           wire:click.prevent="viewColumn('{{ $viewColumn ? "$viewColumn.$field" : $field }}')">view
+                                        </a>
+                                    @endif
+                                </th>
                             @endforeach
                         </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                        @foreach($data as $row)
+                            <tr>
+                                @foreach($columns as $field => $_)
+                                    <td>{{ $row[$field] ?? '' }}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
     @endisset
 </div>

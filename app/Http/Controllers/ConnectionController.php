@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Connection;
 use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
 
 class ConnectionController
 {
@@ -54,5 +55,17 @@ class ConnectionController
     {
         $connection->delete();
         return redirect()->route('home');
+    }
+
+    public function getFavicon(Connection $connection)
+    {
+        // create empty canvas with background color
+        $img = Image::canvas(20, 20);
+
+        $img->circle(18, 10, 10, function ($draw) use ($connection) {
+            $draw->background($connection->color);
+        });
+
+        return $img->response('png');
     }
 }
