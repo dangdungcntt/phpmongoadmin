@@ -6,7 +6,7 @@
                     $isCurrentDatabase = isset($currentDatabase) ? $currentDatabase == $database['name'] : false;
                 @endphp
                 <li class="mb-1 {{ $isCurrentDatabase ? 'active' : '' }}">
-                    <button class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse"
+                    <button class="btn d-inline-flex align-items-center rounded" data-bs-toggle="collapse" style="color: {{ $currentConnection->color }};font-weight: {{ $isCurrentDatabase ? '600' : '400' }}"
                             data-bs-target="#db-{{ $database['name'] }}" aria-expanded="{{ $isCurrentDatabase ? 'true' : 'false' }}" aria-current="{{ $isCurrentDatabase ? 'true' : 'false' }}">
                         {{ $database['name'] }}
                     </button>
@@ -16,7 +16,7 @@
                                 @php
                                     $isCurrentCollection = isset($currentCollection) ? $currentCollection == $collection['name'] : false;
                                 @endphp
-                                <li><a href="{{ route('sql-editor.collection', [$currentConnection, $database['name'], $collection['name']]) }}"
+                                <li><a href="{{ route('sql-editor.collection', [$currentConnection, $database['name'], $collection['name']]) }}" style="color: {{ $currentConnection->color }};font-weight: {{ $isCurrentCollection ? '600' : '400' }}"
                                        class="d-inline-flex align-items-center rounded {{ $isCurrentCollection ? 'active' : '' }}" @if($isCurrentCollection) aria-current="page" @endif>{{ $collection['name'] }}</a></li>
                             @endforeach
                         </ul>

@@ -3,7 +3,7 @@
 @include('partials.connection-databases')
 
 @push('content')
-    <p class="mb-2"><strong>Run SQL query on {{ isset($currentCollection) ? 'collection' : 'database' }}: {{ $currentDatabase }}{{ isset($currentCollection) ? ".{$currentCollection}" : '' }}</strong></p>
+    <p class="mb-2">Run SQL query on {{ isset($currentCollection) ? 'collection' : 'database' }}: <strong style="color: {{ $currentConnection->color }}">{{ $currentDatabase }}{{ isset($currentCollection) ? ".{$currentCollection}" : '' }}</strong></p>
     <textarea id="code" name="code">{{ $sql }}</textarea>
     <div class="mt-4">
         <livewire:sql-result :sql="$sql" :connectionId="$currentConnection->id" :database="$currentDatabase"/>

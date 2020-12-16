@@ -30,6 +30,11 @@ class Connection extends Model
         return parse_url($this->uri);
     }
 
+    public function getColorBox(int $size = 25)
+    {
+        return "<span class='d-inline-block me-2' style='border-radius: 50%;vertical-align: middle;width: {$size}px;height: {$size}px;background-color: {$this->color}'></span>";
+    }
+
     public function getDatabasesAttribute()
     {
         return Cache::remember(

@@ -21,7 +21,7 @@
         </div>
         <div class="mb-3">
             <label for="color" class="form-label">Color</label>
-            <input type="color" class="form-control" id="color" name="color" value="{{ $connection->color }}">
+            <input type="color" class="form-control form-control-color" id="color" name="color" value="{{ $connection->color }}">
         </div>
         <div class="mb-3">
             <a href="{{ route('home') }}" class="btn btn-light">Back to list</a>

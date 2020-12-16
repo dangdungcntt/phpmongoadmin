@@ -7,18 +7,20 @@ use Illuminate\Http\Request;
 
 class ConnectionController
 {
-    public function create(Request $request)
+    public function create(Request $request, ?Connection $connection = null)
     {
-        return view('connections.create');
+        $connection ??= new Connection();
+
+        return view('connections.create', compact('connection'));
     }
 
     public function store(Request $request)
     {
         $request->validate(
             [
-                'name' => 'unique:connections,name',
-                'uri'  => ['required', 'url'],
-                'color'  => ['required'],
+                'name'  => 'unique:connections,name',
+                'uri'   => ['required', 'url'],
+                'color' => ['required'],
             ]
         );
         Connection::query()->create($request->only(['name', 'uri', 'color']));
@@ -39,12 +41,18 @@ class ConnectionController
     {
         $request->validate(
             [
-                'name' => 'unique:connections,name,'.$connection->id,
-                'uri'  => ['required', 'url'],
+                'name'  => 'unique:connections,name,'.$connection->id,
+                'uri'   => ['required', 'url'],
                 'color' => ['required']
             ]
         );
         $connection->update($request->only(['name', 'uri', 'color']));
+        return redirect()->route('home');
+    }
+
+    public function destroy(Connection $connection)
+    {
+        $connection->delete();
         return redirect()->route('home');
     }
 }

@@ -2,3 +2,7 @@
     height: 250px;
     font-size: .9rem;
 }
+
+.required {
+    color: red;
+}

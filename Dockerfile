@@ -10,6 +10,10 @@ RUN composer install --prefer-dist --no-progress --no-scripts --no-autoloader &&
 
 COPY . /home/app
 
-RUN cp .env.production .env \
+RUN cp .env.example .env \
     && chown -R www-data:www-data storage bootstrap \
     && composer dump-autoload --no-scripts --optimize
+
+ENTRYPOINT touch database/database.sqlite && chmod 777 database/database.sqlite \
+    && php artisan migrate \
+    && /sbin/runit-wrapper

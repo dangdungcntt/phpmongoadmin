@@ -9,9 +9,11 @@ Route::prefix('connections')
     ->group(
         function () {
             Route::get('create', [ConnectionController::class, 'create'])->name('connections.create');
+            Route::get('{connection}/clone', [ConnectionController::class, 'create'])->name('connections.clone');
             Route::post('/', [ConnectionController::class, 'store'])->name('connections.store');
             Route::get('{connection}/edit', [ConnectionController::class, 'edit'])->name('connections.edit');
             Route::put('{connection}', [ConnectionController::class, 'update'])->name('connections.update');
+            Route::delete('{connection}', [ConnectionController::class, 'destroy'])->name('connections.destory');
 
             Route::middleware([ShareCurrentConnection::class])->group(
                 function () {
