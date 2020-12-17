@@ -1,6 +1,7 @@
 .CodeMirror {
     height: 250px;
     font-size: .9rem;
+    border: 1px solid #bbb;
 }
 
 .required {

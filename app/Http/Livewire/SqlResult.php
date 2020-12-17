@@ -89,7 +89,7 @@ class SqlResult extends Component
         return view('livewire.sql-result');
     }
 
-    protected function extractData(array $data, string $docId)
+    protected function extractData(array $data, string $docId): array
     {
         $columns = [];
 

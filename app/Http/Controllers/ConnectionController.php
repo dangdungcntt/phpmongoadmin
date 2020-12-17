@@ -20,7 +20,7 @@ class ConnectionController
         $request->validate(
             [
                 'name'  => 'unique:connections,name',
-                'uri'   => ['required', 'url'],
+                'uri'   => ['required', 'start_with:mongodb://,mongodb+srv://'],
                 'color' => ['required'],
             ]
         );
