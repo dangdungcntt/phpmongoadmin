@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Encoders\BoolEncoder;
 use App\Encoders\ObjectIdEncoder;
 use App\Encoders\StringEncoder;
 use App\Encoders\UTCDateTimeEncoder;
@@ -42,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
                     $objectMapper->addEncoder(UTCDateTime::class, UTCDateTimeEncoder::class);
                     $objectMapper->addEncoder(ObjectId::class, ObjectIdEncoder::class);
                     $objectMapper->addEncoder('string', StringEncoder::class);
+                    $objectMapper->addEncoder('boolean', BoolEncoder::class);
                     $objectMapper->setJsonEncodeFlags(JSON_UNESCAPED_UNICODE);
                     return $objectMapper;
                 }
