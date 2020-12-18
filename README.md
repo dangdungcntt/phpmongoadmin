@@ -6,6 +6,8 @@ Requirements
 
 - docker
 
+Each release has a image tag, you can use special version or latest tag with newest build from master branch
+
 ### Linux
 
 ```bash
@@ -49,6 +51,8 @@ Requirements
 
 Run this project as normal Laravel application.
 
+Read [Laravel docs](https://laravel.com/docs/8.x)
+
 ## Generate app key
 
 This project using `APP_KEY` to encrypt `uri` when save to database.
@@ -58,8 +62,6 @@ You must use `regenerate-app-key` command to change app key to keep your current
 ```bash
 php artisan regenerate-app-key
 ```
-
-Read [Laravel docs](https://laravel.com/docs/8.x)
 
 ## Screenshots
 
