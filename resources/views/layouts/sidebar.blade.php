@@ -1,4 +1,7 @@
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="collapse d-md-none" id="navbarSupportedContent">
+        @stack('nav-right')
+    </div>
     <div class="dropdown" style="border-bottom: 1px solid #ddd">
         <button class="btn btn-bd-light dropdown-toggle d-block" id="bd-versions" style="width: 100%"
                 data-bs-toggle="dropdown"

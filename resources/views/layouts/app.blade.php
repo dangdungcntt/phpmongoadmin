@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@yield('page_title', config('app.name'))</title>
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
     <link rel="stylesheet" href="{{ asset('css/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/docs-sidebar.css') }}">
@@ -16,11 +17,14 @@
 
 <body>
 
-<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+<header class="navbar navbar-expand-md navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="{{ route('home') }}">{{ config('app.name') }}</a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu, #navbarSupportedContent" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
+    <div class="navbar-collapse collapse justify-content-end text-end">
+        @stack('nav-right')
+    </div>
 </header>
 
 <div class="container-fluid">
