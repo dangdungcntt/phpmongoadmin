@@ -1,5 +1,5 @@
 @push('connection_databases')
-    <ul class="list-unstyled mb-0 py-3 pt-md-1">
+    <ul class="list-unstyled mb-0 px-2 py-3 pt-md-1">
         @if(isset($currentConnection))
             @foreach($currentConnection->databases as $database)
                 @php

@@ -1,5 +1,5 @@
-<aside class="bd-sidebar bd-subnavbar">
-    <div class="dropdown">
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="dropdown" style="border-bottom: 1px solid #ddd">
         <button class="btn btn-bd-light dropdown-toggle d-block" id="bd-versions" style="width: 100%"
                 data-bs-toggle="dropdown"
                 aria-expanded="false">
@@ -23,8 +23,7 @@
             <li><a class="dropdown-item" href="{{ route('home') }}">Manage connection</a></li>
         </ul>
     </div>
-    <nav class="collapse bd-links" id="bd-docs-nav" aria-label="Docs navigation">
+    <div class="position-sticky bd-links" style="height: calc(100% - 39px);overflow-x: auto">
         @stack('connection_databases')
-    </nav>
-
-</aside>
+    </div>
+</nav>
