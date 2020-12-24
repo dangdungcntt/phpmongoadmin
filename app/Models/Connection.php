@@ -107,6 +107,8 @@ class Connection extends Model
             $query->getOptions()
         );
 
+        logger()->info('Executed query: ' . json_encode($query));
+
         $data = [];
         foreach ($cursor as $index => $item) {
             if ($index >= $hardLimit) {
@@ -117,7 +119,7 @@ class Connection extends Model
         }
 
         if ($shouldCache) {
-            Cache::put($cacheKey, $data, 60);
+            Cache::put($cacheKey, $data, config('query.cache.ttl'));
         }
 
         return $data;
