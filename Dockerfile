@@ -14,6 +14,7 @@ RUN cp .env.example .env \
     && chown -R www-data:www-data storage bootstrap \
     && composer dump-autoload --no-scripts --optimize
 
-ENTRYPOINT touch database/database.sqlite && chmod 777 database/database.sqlite \
+ENTRYPOINT touch database/database.sqlite \
+    && chown -R www-data:www-data database \
     && php artisan migrate \
     && /sbin/runit-wrapper
