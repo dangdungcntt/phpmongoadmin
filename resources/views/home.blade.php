@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="icon" href="{{ asset('favicon.png')}}?v={{ microtime(true) }}" type="image/png" sizes="20x20">
+@endpush
+
 @push('content')
     <div>
         <h3>All Connections <a href="{{ route('connections.create') }}" class="btn btn-success btn-sm"><i class="bi bi-plus"></i>Add new connection</a></h3>

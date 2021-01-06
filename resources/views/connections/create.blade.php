@@ -26,7 +26,7 @@
 @endpush
 
 @push('styles')
-
+    <link rel="icon" href="{{ asset('favicon.png')}}?v={{ microtime(true) }}" type="image/png" sizes="20x20">
 @endpush
 
 @push('scripts')
