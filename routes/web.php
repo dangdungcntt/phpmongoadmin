@@ -10,6 +10,8 @@ Route::prefix('connections')
         function () {
             Route::get('create', [ConnectionController::class, 'create'])->name('connections.create');
             Route::get('{connection}/clone', [ConnectionController::class, 'create'])->name('connections.clone');
+            Route::get('{connection}/order-up', [ConnectionController::class, 'orderUp'])->name('connections.order-up');
+            Route::get('{connection}/order-down', [ConnectionController::class, 'orderDown'])->name('connections.order-down');
             Route::post('/', [ConnectionController::class, 'store'])->name('connections.store');
             Route::get('{connection}/edit', [ConnectionController::class, 'edit'])->name('connections.edit');
             Route::put('{connection}', [ConnectionController::class, 'update'])->name('connections.update');
@@ -28,4 +30,4 @@ Route::prefix('connections')
         }
     );
 
-Route::view('/', 'home')->name('home');
+Route::get('/', [ConnectionController::class, 'index'])->name('home');

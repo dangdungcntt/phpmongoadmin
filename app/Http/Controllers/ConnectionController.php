@@ -4,10 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Connection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 
 class ConnectionController
 {
+    public function index()
+    {
+        $connections = Connection::query()
+            ->orderBy('order')
+            ->get();
+        return view('home', compact('connections'));
+    }
+
     public function create(Request $request, ?Connection $connection = null)
     {
         $connection ??= new Connection();
@@ -24,7 +33,12 @@ class ConnectionController
                 'color' => ['required'],
             ]
         );
-        Connection::query()->create($request->only(['name', 'uri', 'color']));
+
+        $request->merge([
+            'order' => Connection::query()->max('order') + 1
+        ]);
+
+        Connection::query()->create($request->only(['name', 'uri', 'color', 'order']));
         return redirect()->route('home');
     }
 
@@ -53,7 +67,70 @@ class ConnectionController
 
     public function destroy(Connection $connection)
     {
-        $connection->delete();
+        DB::transaction(function () use ($connection) {
+            $connection->delete();
+
+            $index = 1;
+
+            $connections = Connection::query()
+                ->orderBy('order')
+                ->get();
+
+            foreach ($connections as $connection) {
+                $connection->update([
+                    'order' => $index++
+                ]);
+            }
+        });
+
+        return redirect()->route('home');
+    }
+
+    public function orderUp(Connection $connection)
+    {
+        $prevConnection = Connection::query()
+            ->where('order', '<', $connection->order)
+            ->orderBy('order', 'desc')
+            ->first();
+
+        if (empty($prevConnection)) {
+            return redirect()->route('home');
+        }
+
+        $prevOrder = $prevConnection->order;
+
+        $prevConnection->update([
+            'order' => $connection->order
+        ]);
+
+        $connection->update([
+            'order' => $prevOrder
+        ]);
+
+        return redirect()->route('home');
+    }
+
+    public function orderDown(Connection $connection)
+    {
+        $nextConnection = Connection::query()
+            ->where('order', '>', $connection->order)
+            ->orderBy('order', 'asc')
+            ->first();
+
+        if (empty($nextConnection)) {
+            return redirect()->route('home');
+        }
+
+        $nextOrder = $nextConnection->order;
+
+        $nextConnection->update([
+            'order' => $connection->order
+        ]);
+
+        $connection->update([
+            'order' => $nextOrder
+        ]);
+
         return redirect()->route('home');
     }
 

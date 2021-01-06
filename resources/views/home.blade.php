@@ -9,10 +9,11 @@
                 <th>Name</th>
                 <th>DB Server</th>
                 <th>Actions</th>
+                <th>Order</th>
             </tr>
             </thead>
             <tbody>
-            @forelse(\App\Models\Connection::all() as $connection)
+            @forelse($connections as $connection)
                 <tr>
                     <td>{!! $connection->getColorBox() !!}{{ $connection->name }}</td>
                     <td>{{ join(':', \Illuminate\Support\Arr::only($connection->host_port, ['host', 'port'])) }}</td>
@@ -33,6 +34,17 @@
                             @csrf
                             @method('DELETE')
                         </form>
+                    </td>
+                    <td>
+                        <a @if(!$loop->first) href="{{ route('connections.order-up', $connection) }}" class="btn btn-outline-primary btn-sm" @else class="btn btn-sm disabled" @endif>
+                            <i class="bi bi-arrow-up"></i>
+                        </a>
+                        <a @if(!$loop->last) href="{{ route('connections.order-down', $connection) }}" class="btn btn-outline-success btn-sm" @else class="btn btn-sm disabled" @endif>
+                            <i class="bi bi-arrow-down"></i>
+                        </a>
+                        @if(config('app.debug'))
+                            ({{ $connection->order }})
+                        @endif
                     </td>
                 </tr>
             @empty
