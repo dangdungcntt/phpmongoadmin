@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "745d57d85cb93eb2bb3f12c4a8190c91",
+    "content-hash": "3f705a2780044be768f99634c39e3a32",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2123,7 +2123,7 @@
         },
         {
             "name": "nddcoder/object-mapper",
-            "version": "dev-master",
+            "version": "v0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dangdungcntt/object-mapper.git",
@@ -2143,7 +2143,6 @@
                 "phpunit/phpunit": "^9.3",
                 "vimeo/psalm": "^4.3"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2170,22 +2169,22 @@
             ],
             "support": {
                 "issues": "https://github.com/dangdungcntt/object-mapper/issues",
-                "source": "https://github.com/dangdungcntt/object-mapper/tree/master"
+                "source": "https://github.com/dangdungcntt/object-mapper/tree/v0.0.3"
             },
             "time": "2020-12-20T02:42:48+00:00"
         },
         {
             "name": "nddcoder/sql-to-mongodb-query",
-            "version": "dev-master",
+            "version": "0.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dangdungcntt/sql-to-mongodb-query.git",
-                "reference": "85e8df211808c63b7765ba4755d5202f2e9cd565"
+                "reference": "1a98fe9364bf175a326bb8ae4dadc92dd80f07e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dangdungcntt/sql-to-mongodb-query/zipball/85e8df211808c63b7765ba4755d5202f2e9cd565",
-                "reference": "85e8df211808c63b7765ba4755d5202f2e9cd565",
+                "url": "https://api.github.com/repos/dangdungcntt/sql-to-mongodb-query/zipball/1a98fe9364bf175a326bb8ae4dadc92dd80f07e9",
+                "reference": "1a98fe9364bf175a326bb8ae4dadc92dd80f07e9",
                 "shasum": ""
             },
             "require": {
@@ -2199,7 +2198,6 @@
                 "symfony/var-dumper": "^5.2",
                 "vimeo/psalm": "^4.3"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2227,9 +2225,9 @@
             ],
             "support": {
                 "issues": "https://github.com/dangdungcntt/sql-to-mongodb-query/issues",
-                "source": "https://github.com/dangdungcntt/sql-to-mongodb-query/tree/master"
+                "source": "https://github.com/dangdungcntt/sql-to-mongodb-query/tree/0.0.1"
             },
-            "time": "2020-12-15T10:17:02+00:00"
+            "time": "2021-01-07T07:00:57+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -8162,10 +8160,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "nddcoder/object-mapper": 20,
-        "nddcoder/sql-to-mongodb-query": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
