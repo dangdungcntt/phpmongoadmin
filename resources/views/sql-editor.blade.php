@@ -11,8 +11,9 @@
                     class="current-style"></span></a>
             <ul class="dropdown-menu dropdown-menu-end position-absolute dropdown-style" aria-labelledby="dropdown01">
                 @foreach(config('highlight.styles') as $key => $label)
-                    <li class="highlight-style-item"><a data-key="{{ $key }}" class="dropdown-item"
-                                                        href="javascript:;">{{ $label }}</a></li>
+                    <li class="highlight-style-item">
+                        <a data-key="{{ $key }}" class="dropdown-item" href="javascript:;">{{ $label }}</a>
+                    </li>
                 @endforeach
             </ul>
         </li>
@@ -26,7 +27,7 @@
     <textarea id="code" name="code">{{ $sql }}</textarea>
     <div class="mt-2">
         <button id="btn-run" type="button" class="btn btn-sm btn-success">Run query</button>
-        <small style="font-style: italic; color: #7b7b7b">or Press "Ctrl+Enter"</small>
+        <small style="font-style: italic; color: #7b7b7b">or Press "Ctrl/Cmd + Enter"</small>
     </div>
     <hr>
     <div class="mt-2">
@@ -59,8 +60,9 @@
                 matchBrackets: true,
                 autofocus: true,
                 extraKeys: {
-                    "Ctrl-Space": "autocomplete",
-                    "Ctrl-Enter": run
+                    'Ctrl-Space': 'autocomplete',
+                    'Ctrl-Enter': run,
+                    'Cmd-Enter': run,
                 }
             });
 
