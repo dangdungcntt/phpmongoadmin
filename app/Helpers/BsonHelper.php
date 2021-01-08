@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use ArrayObject;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
@@ -10,7 +11,7 @@ use Nddcoder\ObjectMapper\ObjectMapper;
 
 class BsonHelper
 {
-    public static function encode(\ArrayObject $value, string $pad = '    '): string
+    public static function encode(ArrayObject $value, string $pad = '    '): string
     {
         /** @var ObjectMapper $objectMapper */
         $objectMapper = app()->make('bson-object-mapper');
@@ -22,7 +23,7 @@ class BsonHelper
 
         foreach ($value as $field => $item) {
             $s      = match (true) {
-                $item instanceof \ArrayObject => static::encode(
+                $item instanceof ArrayObject => static::encode(
                     $item,
                     $pad.'    '
                 ),

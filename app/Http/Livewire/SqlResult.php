@@ -4,16 +4,17 @@ namespace App\Http\Livewire;
 
 use App\Helpers\BsonHelper;
 use App\Models\Connection;
+use ArrayAccess;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Model\BSONArray;
 use MongoDB\Model\BSONDocument;
-use Nddcoder\ObjectMapper\ObjectMapper;
 use Nddcoder\SqlToMongodbQuery\Model\Aggregate;
 use Nddcoder\SqlToMongodbQuery\Model\FindQuery;
 use Nddcoder\SqlToMongodbQuery\Model\Query;
 use Nddcoder\SqlToMongodbQuery\SqlToMongodbQuery;
+use Throwable;
 
 class SqlResult extends Component
 {
@@ -75,19 +76,16 @@ class SqlResult extends Component
                 );
             }
 
-            $objectMapper = new ObjectMapper();
-
             return view(
                 'livewire.sql-result',
                 compact(
                     'columns',
                     'data',
                     'docId',
-                    'breadcrumbs',
-                    'objectMapper'
+                    'breadcrumbs'
                 )
             );
-        } catch (\Exception $exception) {
+        } catch (Throwable $exception) {
             $this->error = $exception::class.' '.$exception->getMessage();
         }
 
@@ -151,7 +149,7 @@ class SqlResult extends Component
                 $item = data_get($item, $this->viewColumn) ?? [];
             }
 
-            if (!$item instanceof \ArrayAccess) {
+            if (!$item instanceof ArrayAccess) {
                 $results[] = $row;
                 continue;
             }

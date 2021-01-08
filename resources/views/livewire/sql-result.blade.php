@@ -42,7 +42,9 @@
                 <div>
                     @foreach($data as $row)
                         <pre><code class="sql">{{ \App\Helpers\BsonHelper::encode($row) }}</code></pre>
-                        <div style="color: green">-----------------------------------------<br><br></div>
+                        @if(!$loop->last)
+                            <div style="color: green">-----------------------------------------<br><br></div>
+                        @endif
                     @endforeach
                 </div>
             @else
@@ -51,7 +53,8 @@
                         <thead>
                         <tr>
                             @foreach($columns as $field => $type)
-                                <th>{{ $field == $docId ? '{Document id}' : $field }}
+                                <th>
+                                    {{ $field == $docId ? '{Document id}' : $field }}
                                     @if($type != 'default')
                                         <a href="#" type="button"
                                            class="btn btn-sm btn-link"

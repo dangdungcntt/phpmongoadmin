@@ -13,8 +13,10 @@ use Nddcoder\SqlToMongodbQuery\Model\Query;
 
 /**
  * @property int id
- * @property string name
- * @property string uri
+ * @property string $name
+ * @property string $uri
+ * @property string $color
+ * @property int $order
  */
 class Connection extends Model
 {
@@ -107,7 +109,7 @@ class Connection extends Model
             $query->getOptions()
         );
 
-        logger()->info('Executed query: ' . json_encode($query));
+        logger()->info('Executed query: '.json_encode($query));
 
         $data = [];
         foreach ($cursor as $index => $item) {

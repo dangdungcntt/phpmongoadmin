@@ -17,7 +17,7 @@ class ConnectionController
         return view('home', compact('connections'));
     }
 
-    public function create(Request $request, ?Connection $connection = null)
+    public function create(?Connection $connection = null)
     {
         $connection ??= new Connection();
 
@@ -42,12 +42,12 @@ class ConnectionController
         return redirect()->route('home');
     }
 
-    public function show(Request $request, Connection $connection)
+    public function show(Connection $connection)
     {
         return view('connections.show', compact('connection'));
     }
 
-    public function edit(Request $request, Connection $connection)
+    public function edit(Connection $connection)
     {
         return view('connections.edit', compact('connection'));
     }
@@ -114,7 +114,7 @@ class ConnectionController
     {
         $nextConnection = Connection::query()
             ->where('order', '>', $connection->order)
-            ->orderBy('order', 'asc')
+            ->orderBy('order')
             ->first();
 
         if (empty($nextConnection)) {
