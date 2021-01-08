@@ -21,17 +21,17 @@
 @endpush
 
 @push('content')
-    <p class="mb-2">Run SQL query on {{ isset($currentCollection) ? 'collection' : 'database' }}: <strong
+    <p class="mb-2">Run SQL/Json/Aggregate query on {{ isset($currentCollection) ? 'collection' : 'database' }}: <strong
             style="color: {{ $currentConnection->color }}">{{ $currentDatabase }}{{ isset($currentCollection) ? ".{$currentCollection}" : '' }}</strong>
     </p>
-    <textarea id="code" name="code">{{ $sql }}</textarea>
+    <textarea autocomplete="off" id="code" name="code">{{ $sql }}</textarea>
     <div class="mt-2">
         <button id="btn-run" type="button" class="btn btn-sm btn-success">Run query</button>
         <small style="font-style: italic; color: #7b7b7b">or Press "Ctrl/Cmd + Enter"</small>
     </div>
     <hr>
     <div class="mt-2">
-        <livewire:sql-result :sql="$sql" :connectionId="$currentConnection->id" :database="$currentDatabase"/>
+        <livewire:sql-result :sql="$sql" :connectionId="$currentConnection->id" :database="$currentDatabase" :collectionName="$currentCollection ?? null"/>
     </div>
 @endpush
 
@@ -50,9 +50,27 @@
     <script src="{{ asset('codemirror/addon/hint/show-hint.js') }}"></script>
     <script src="{{ asset('codemirror/addon/hint/sql-hint.js') }}"></script>
     <script src="{{ asset('highlightjs/highlight.pack.js') }}"></script>
+    <script src="{{ asset('js/mongodb-query-functions.js') }}"></script>
     <script>
         (() => {
-            let editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+            let codeEl = document.getElementById('code');
+            const autoSaveKey = `auto_save_${location.pathname}`;
+            let cursor = {
+                line: 0,
+                ch: codeEl.value.length
+            }
+
+            if (localStorage.getItem(autoSaveKey)) {
+                try {
+                    let savedData = JSON.parse(localStorage.getItem(autoSaveKey))
+                    codeEl.value = savedData.value
+                    cursor = savedData.cursor || cursor
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+
+            let editor = CodeMirror.fromTextArea(codeEl, {
                 mode: 'text/x-mariadb',
                 indentWithTabs: true,
                 smartIndent: true,
@@ -66,10 +84,29 @@
                 }
             });
 
+            editor.setCursor(cursor)
+
             document.getElementById('btn-run').addEventListener('click', run)
 
             function run() {
+                localStorage.setItem(autoSaveKey, JSON.stringify({
+                    value: editor.getValue(),
+                    cursor: {
+                        line: editor.getCursor().line,
+                        ch: editor.getCursor().ch
+                    }
+                }));
                 let sql = editor.getSelection() || editor.getLine(editor.getCursor().line) || editor.getValue();
+                sql = sql.trim();
+
+                if (sql.startsWith('{') || sql.startsWith('[')) {
+                    try {
+                        sql = eval(`JSON.stringify(${sql})`)
+                    } catch (e) {
+
+                    }
+                }
+
                 Livewire.emitTo('sql-result', 'execute', sql)
             }
 

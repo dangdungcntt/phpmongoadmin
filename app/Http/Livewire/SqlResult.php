@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Helpers\BsonHelper;
 use App\Models\Connection;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -9,13 +10,16 @@ use MongoDB\BSON\UTCDateTime;
 use MongoDB\Model\BSONArray;
 use MongoDB\Model\BSONDocument;
 use Nddcoder\ObjectMapper\ObjectMapper;
+use Nddcoder\SqlToMongodbQuery\Model\Aggregate;
+use Nddcoder\SqlToMongodbQuery\Model\FindQuery;
+use Nddcoder\SqlToMongodbQuery\Model\Query;
 use Nddcoder\SqlToMongodbQuery\SqlToMongodbQuery;
 
 class SqlResult extends Component
 {
     const MAX_RESULT = 1000;
 
-    public string $sql = '';
+    public array|string $sql = '';
     public ?string $error = null;
     public ?string $viewColumn = null;
     public string $viewType = 'table';
@@ -46,10 +50,11 @@ class SqlResult extends Component
 
     public function render()
     {
+        $this->error = '';
         try {
             /** @var Connection $connection */
             $connection           = Connection::query()->findOrFail($this->connectionId);
-            $query                = (new SqlToMongodbQuery())->parse($this->sql);
+            $query                = $this->buildQuery();
             $this->collectionName = $query->collection;
             $data                 = $connection->execute(
                 query: $query,
@@ -87,6 +92,43 @@ class SqlResult extends Component
         }
 
         return view('livewire.sql-result');
+    }
+
+    protected function buildQuery(): Query
+    {
+        $sql = trim($this->sql);
+        if (!$this->collectionName) {
+            return (new SqlToMongodbQuery())->parse($sql);
+        }
+
+        if (str_starts_with($sql, '{') && !is_null($filter = BsonHelper::decode($sql))) {
+            //Raw mongo query
+            return new FindQuery(
+                collection: $this->collectionName,
+                filter: $filter
+            );
+        }
+
+        if (str_starts_with($sql, '[') && ($pipelines = json_decode($sql, true))) {
+            $pipelines = collect($pipelines)
+                ->map(function ($pipeline) {
+                    if (isset($pipeline['$match'])) {
+                        $pipeline['$match'] = BsonHelper::decode($pipeline['$match']);
+                        if (empty($pipeline['$match'])) {
+                            $pipeline['$match'] = (object) [];
+                        }
+                    }
+                    return $pipeline;
+                })
+                ->toArray();
+            //Raw mongo aggregation
+            return new Aggregate(
+                collection: $this->collectionName,
+                pipelines: $pipelines
+            );
+        }
+
+        return (new SqlToMongodbQuery())->parse($sql);
     }
 
     protected function extractData(array $data, string $docId): array
