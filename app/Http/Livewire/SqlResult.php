@@ -82,7 +82,8 @@ class SqlResult extends Component
                     'columns',
                     'data',
                     'docId',
-                    'breadcrumbs'
+                    'breadcrumbs',
+                    'query'
                 )
             );
         } catch (Throwable $exception) {

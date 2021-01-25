@@ -5,7 +5,19 @@
         </div>
     @endif
 
-    <div class="input-group mb-2">
+    @isset($query)
+        <div>
+            <strong>Executed query:</strong>
+        </div>
+        @if($query instanceof \Nddcoder\SqlToMongodbQuery\Model\FindQuery)
+            <textarea class="form-control">{{ json_encode((object)$query->filter) }}</textarea>
+        @endif
+        @if($query instanceof \Nddcoder\SqlToMongodbQuery\Model\Aggregate)
+            <textarea class="form-control">{{ json_encode($query->pipelines) }}</textarea>
+        @endif
+    @endisset
+
+    <div class="input-group mb-2 mt-2">
         <button wire:click="changeViewType('table')" class="btn btn-sm {{ $viewType == 'table' ? 'btn-primary' : 'btn-light' }}">Table View</button>
         <button wire:click="changeViewType('json')" class="btn btn-sm {{ $viewType == 'json' ? 'btn-primary' : 'btn-light' }}">Json View</button>
     </div>

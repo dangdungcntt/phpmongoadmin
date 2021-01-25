@@ -97,18 +97,7 @@
                     }
                 }));
 
-                let sql = editor.getSelection();
-
-                if (!sql) {
-                    let line = editor.getLine(editor.getCursor().line)
-                    if (line && line.trim().toLowerCase().startsWith('select')) {
-                        sql = line
-                    }
-                }
-
-                if (!sql) {
-                    sql = editor.getValue();
-                }
+                let sql = editor.getSelection() || editor.getLine(editor.getCursor().line) || editor.getValue();
 
                 sql = sql.trim();
 
