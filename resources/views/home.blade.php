@@ -46,9 +46,6 @@
                         <a @if(!$loop->last) href="{{ route('connections.order-down', $connection) }}" class="btn btn-outline-success btn-sm" @else class="btn btn-sm disabled" @endif>
                             <i class="bi bi-arrow-down"></i>
                         </a>
-                        @if(config('app.debug'))
-                            ({{ $connection->order }})
-                        @endif
                     </td>
                 </tr>
             @empty
