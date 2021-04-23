@@ -26,7 +26,7 @@
                 <button class="btn btn-light" wire:click="prevPage()" @if($page == 0) disabled style="color: #cccccc;cursor: not-allowed" @endif>&lt;</button>
                 <button class="btn btn-light" wire:click="nextPage()" @if(count($data) < $limit) disabled style="color: #cccccc;cursor: not-allowed" @endif>&gt;</button>
                 <button wire:click="count()" class="btn btn-sm btn-warning">
-                    {{ is_null($countDocuments) ? 'Count' : $countDocuments }} {{ is_null($countDocuments) || $countDocuments >= 2 ? 'documents' : 'document' }}
+                    {{ is_null($countDocuments) ? 'Count' : number_format($countDocuments) }} {{ is_null($countDocuments) || $countDocuments >= 2 ? 'documents' : 'document' }}
                 </button>
                 <img style="margin-left: 5px" wire:loading.delay src="{{ asset('loading.gif') }}" height="31" alt="">
             </div>

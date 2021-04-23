@@ -112,15 +112,42 @@
                 Livewire.emitTo('sql-result', 'execute', sql)
             }
 
-            function highlight() {
-                document.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightBlock(block);
-                });
+            function debounce(func, wait) {
+                var timeout;
+
+                return function() {
+                    var context = this,
+                        args = arguments;
+
+                    var executeFunction = function() {
+                        func.apply(context, args);
+                    };
+
+                    clearTimeout(timeout);
+                    timeout = setTimeout(executeFunction, wait);
+                };
             }
 
-            Livewire.hook('element.updated', () => requestAnimationFrame(highlight))
+            const observer = new IntersectionObserver((entries) => {
+                entries.map((entry) => {
+                    if (entry.isIntersecting) {
+                        hljs.highlightBlock(entry.target);
+                    }
+                })
+            });
 
-            highlight();
+            const reObserver = debounce(() => {
+                observer.disconnect()
+                document.querySelectorAll('pre code').forEach((block) => {
+                    observer.observe(block)
+                });
+            }, 100)
+
+            Livewire.hook('element.updated', reObserver)
+
+            document.querySelectorAll('pre code').forEach((block) => {
+                observer.observe(block)
+            });
 
             let linkStyleEl = document.getElementById('highlight-style-link');
             let defaultStyleLink = '{{ asset('highlightjs/styles/default.css') }}';
