@@ -19,6 +19,7 @@ use Throwable;
 class SqlResult extends Component
 {
     const MAX_RESULT = 1000;
+    const DEFAULT_LIMIT = 50;
 
     public array|string $sql = '';
     public ?string $error = null;
@@ -28,20 +29,52 @@ class SqlResult extends Component
     public string $database;
     public string $collectionName;
     public bool $executed = false;
+    public bool $shouldCount = false;
+    public int $page = 0;
+    public bool $lastPage = false;
 
     protected $listeners = ['execute'];
 
-    protected $queryString = ['sql', 'viewColumn', 'viewType'];
+    protected $queryString = ['sql', 'viewColumn', 'viewType', 'page'];
 
     public function changeViewType(string $newViewType)
     {
         $this->viewType = $newViewType;
     }
 
+    public function nextPage()
+    {
+        if (!$this->lastPage) {
+            $this->page++;
+            $this->executed = false;
+        } else {
+            $this->executed = true;
+        }
+        $this->shouldCount = false;
+    }
+
+    public function prevPage()
+    {
+        if ($this->page > 0) {
+            $this->page--;
+            $this->executed = false;
+        } else {
+            $this->executed = true;
+        }
+        $this->shouldCount = false;
+    }
+
     public function execute(string $sql)
     {
-        $this->executed = false;
-        $this->sql      = $sql;
+        $this->executed    = false;
+        $this->shouldCount = false;
+        $this->sql         = $sql;
+    }
+
+    public function count()
+    {
+        $this->executed    = true;
+        $this->shouldCount = true;
     }
 
     public function viewColumn(string $column)
@@ -57,13 +90,25 @@ class SqlResult extends Component
             $connection           = Connection::query()->findOrFail($this->connectionId);
             $query                = $this->buildQuery();
             $this->collectionName = $query->collection;
-            $data                 = $connection->execute(
+            $skip                 = 0;
+            $limit                = self::DEFAULT_LIMIT;
+            if ($query instanceof FindQuery) {
+                $limit = $query->limit ?: self::DEFAULT_LIMIT;
+                $skip  = $query->skip + ($this->page * $limit);
+            }
+            if ($query instanceof Aggregate) {
+                $skip = $this->page * $limit;
+            }
+            $data           = $connection->execute(
                 query: $query,
                 database: $this->database,
                 shouldCache: $this->executed,
-                hardLimit: self::MAX_RESULT
+                defaultLimit: self::DEFAULT_LIMIT,
+                hardLimit: self::MAX_RESULT,
+                skip: $skip
             );
-            $this->executed       = true;
+            $this->executed = true;
+            $this->lastPage = count($data) < $limit;
 
             $breadcrumbs = empty($this->viewColumn) ? [] : explode('.', $this->viewColumn);
             $columns     = [];
@@ -76,6 +121,16 @@ class SqlResult extends Component
                 );
             }
 
+            $countDocuments = null;
+
+            if ($this->shouldCount) {
+                if ($query instanceof FindQuery) {
+                    $countDocuments = $connection->countQuery($query, $this->database);
+                } elseif ($query instanceof Aggregate) {
+                    $countDocuments = $connection->countAggregate($query, $this->database);
+                }
+            }
+
             return view(
                 'livewire.sql-result',
                 compact(
@@ -83,7 +138,10 @@ class SqlResult extends Component
                     'data',
                     'docId',
                     'breadcrumbs',
-                    'query'
+                    'query',
+                    'countDocuments',
+                    'skip',
+                    'limit'
                 )
             );
         } catch (Throwable $exception) {
@@ -140,7 +198,7 @@ class SqlResult extends Component
 
         $results = [];
 
-        foreach ($data as $index => $item) {
+        foreach ($data as $item) {
             $row = [];
 
             if (!empty($this->viewColumn)) {

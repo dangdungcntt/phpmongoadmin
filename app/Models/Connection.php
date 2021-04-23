@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use MongoDB\Client;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\DatabaseInfo;
+use Nddcoder\SqlToMongodbQuery\Model\Aggregate;
 use Nddcoder\SqlToMongodbQuery\Model\FindQuery;
 use Nddcoder\SqlToMongodbQuery\Model\Query;
 
@@ -84,9 +85,10 @@ class Connection extends Model
         string $database,
         bool $shouldCache = false,
         int $defaultLimit = 50,
-        int $hardLimit = 1000
+        int $hardLimit = 1000,
+        int $skip = 0
     ) {
-        $cacheKey = md5("$this->id|$database|$query->collection|".json_encode($query));
+        $cacheKey = md5("$this->id|$database|$query->collection|$skip|".json_encode($query));
 
         if ($shouldCache && $cachedData = Cache::get($cacheKey)) {
             return $cachedData;
@@ -101,11 +103,12 @@ class Connection extends Model
             array_merge(
                 $query->getOptions(),
                 [
+                    'skip'  => $skip,
                     'limit' => $query->limit ?: $defaultLimit
                 ]
             )
         ) : $mongoCollection->aggregate(
-            $query->pipelines,
+            array_merge($query->pipelines, [['$skip' => $skip], ['$limit' => $defaultLimit]]),
             $query->getOptions()
         );
 
@@ -125,5 +128,37 @@ class Connection extends Model
         }
 
         return $data;
+    }
+
+    public function countQuery(FindQuery $findQuery, string $database): int
+    {
+        return $this->getMongoClient()
+            ->selectDatabase($database)
+            ->selectCollection($findQuery->collection)
+            ->countDocuments($findQuery->filter);
+    }
+
+    public function countAggregate(Aggregate $aggregate, string $database): int
+    {
+        $pipelines   = $aggregate->pipelines;
+        $pipelines[] = [
+            '$group' => [
+                '_id'   => null,
+                'count' => [
+                    '$sum' => 1
+                ]
+            ]
+        ];
+
+        $cursor = $this->getMongoClient()
+            ->selectDatabase($database)
+            ->selectCollection($aggregate->collection)
+            ->aggregate($pipelines, $aggregate->getOptions());
+
+        foreach ($cursor as $item) {
+            return $item['count'] ?? 0;
+        }
+
+        return 0;
     }
 }

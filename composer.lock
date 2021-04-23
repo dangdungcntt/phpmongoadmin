@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "234de2e925a48049d93629b9c53f37f8",
+    "content-hash": "9af8aad54b11d2786bfc048014caaf42",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2180,7 +2180,7 @@
         },
         {
             "name": "nddcoder/sql-to-mongodb-query",
-            "version": "dev-master",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dangdungcntt/sql-to-mongodb-query.git",
@@ -2203,7 +2203,6 @@
                 "symfony/var-dumper": "^5.2",
                 "vimeo/psalm": "^4.3"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -2231,7 +2230,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dangdungcntt/sql-to-mongodb-query/issues",
-                "source": "https://github.com/dangdungcntt/sql-to-mongodb-query/tree/master"
+                "source": "https://github.com/dangdungcntt/sql-to-mongodb-query/tree/0.0.4"
             },
             "time": "2021-04-22T10:47:28+00:00"
         },
@@ -8190,9 +8189,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "nddcoder/sql-to-mongodb-query": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

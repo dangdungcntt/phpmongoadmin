@@ -13,3 +13,4 @@ npm-debug.log
 yarn-error.log
 .idea
 database.sqlite
+.DS_Store
