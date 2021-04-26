@@ -23,8 +23,8 @@
     <div class="row">
         <div class="col-6">
             <div class="input-group mb-2 mt-2">
-                <button class="btn btn-light" wire:click="prevPage()" @if($page == 0) disabled style="color: #cccccc;cursor: not-allowed" @endif>&lt;</button>
-                <button class="btn btn-light" wire:click="nextPage()" @if(count($data) < $limit) disabled style="color: #cccccc;cursor: not-allowed" @endif>&gt;</button>
+                <button class="btn btn-sm btn-light" wire:click="prevPage()" @if($page == 0) disabled style="color: #cccccc;cursor: not-allowed" @endif>&lt;</button>
+                <button class="btn btn-sm btn-light" wire:click="nextPage()" @if(count($data) < $limit) disabled style="color: #cccccc;cursor: not-allowed" @endif>&gt;</button>
                 <button wire:click="count()" class="btn btn-sm btn-warning">
                     {{ is_null($countDocuments) ? 'Count' : number_format($countDocuments) }} {{ is_null($countDocuments) || $countDocuments >= 2 ? 'documents' : 'document' }}
                 </button>
