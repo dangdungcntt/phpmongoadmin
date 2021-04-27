@@ -60,5 +60,8 @@ class AppServiceProvider extends ServiceProvider
 
         SqlToMongodbQuery::addInlineFunctionBuilder('ObjectId', $objectIdBuilder);
         SqlToMongodbQuery::addInlineFunctionBuilder('Id', $objectIdBuilder);
+        SqlToMongodbQuery::addInlineFunctionBuilder('ISODate', fn($str) => new UTCDateTime(date_create($str)));
+        SqlToMongodbQuery::addInlineFunctionBuilder('lower', fn($str) => strtolower($str));
+        SqlToMongodbQuery::addInlineFunctionBuilder('upper', fn($str) => strtoupper($str));
     }
 }
