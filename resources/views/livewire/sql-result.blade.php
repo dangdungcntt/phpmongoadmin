@@ -74,7 +74,7 @@
             @if($viewType == 'json')
                 <div>
                     @foreach($data as $row)
-                        <pre><code class="sql">{{ \App\Helpers\BsonHelper::encode($row) }}</code></pre>
+                        <pre><code>{{ \App\Helpers\BsonHelper::encode($row) }}</code></pre>
                         @if(!$loop->last)
                             <div style="color: green">-----------------------------------------<br><br></div>
                         @endif

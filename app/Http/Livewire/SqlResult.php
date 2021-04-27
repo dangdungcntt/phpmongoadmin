@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Encoders\UTCDateTimeEncoder;
 use App\Helpers\BsonHelper;
 use App\Models\Connection;
 use ArrayAccess;
@@ -217,7 +218,7 @@ class SqlResult extends Component
                 $row[$field] = match (true) {
                     $value instanceof BSONArray => '['.$value->count().' items]',
                     $value instanceof BSONDocument => '{'.$value->count().' fields}',
-                    $value instanceof UTCDateTime => $value->toDateTime()->format(DATE_RFC3339_EXTENDED),
+                    $value instanceof UTCDateTime => $value->toDateTime()->setTimezone(new \DateTimeZone(config('app.timezone')))->format(UTCDateTimeEncoder::STUDIO_3T_DATE_FORMAT),
                     is_bool($value) => $value ? 'true' : 'false',
                     default => $value
                 };
