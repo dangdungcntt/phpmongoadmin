@@ -20,26 +20,25 @@
         @endif
     @endisset
 
-    <div class="row">
-        <div class="col-6">
-            <div class="input-group mb-2 mt-2">
-                <button class="btn btn-sm btn-light" wire:click="prevPage()" @if($page == 0) disabled style="color: #cccccc;cursor: not-allowed" @endif>&lt;</button>
-                <button class="btn btn-sm btn-light" wire:click="nextPage()" @if(count($data) < $limit) disabled style="color: #cccccc;cursor: not-allowed" @endif>&gt;</button>
-                <button wire:click="count()" class="btn btn-sm btn-warning">
-                    {{ is_null($countDocuments) ? 'Count' : number_format($countDocuments) }} {{ is_null($countDocuments) || $countDocuments >= 2 ? 'documents' : 'document' }}
-                </button>
-                <img style="margin-left: 5px" wire:loading.delay src="{{ asset('loading.gif') }}" height="31" alt="">
-            </div>
-        </div>
-        <div class="col-6">
-            <div class="justify-content-end input-group mb-2 mt-2">
-                <button wire:click="changeViewType('table')" class="btn btn-sm {{ $viewType == 'table' ? 'btn-primary' : 'btn-light' }}">Table View</button>
-                <button wire:click="changeViewType('json')" class="btn btn-sm {{ $viewType == 'json' ? 'btn-primary' : 'btn-light' }}">Json View</button>
-            </div>
-        </div>
-    </div>
-
     @isset($data)
+        <div class="row">
+            <div class="col-6">
+                <div class="input-group mb-2 mt-2">
+                    <button class="btn btn-sm btn-light" wire:click="prevPage()" @if($page == 0) disabled style="color: #cccccc;cursor: not-allowed" @endif>&lt;</button>
+                    <button class="btn btn-sm btn-light" wire:click="nextPage()" @if(count($data) < $limit) disabled style="color: #cccccc;cursor: not-allowed" @endif>&gt;</button>
+                    <button wire:click="count()" class="btn btn-sm btn-warning">
+                        {{ is_null($countDocuments) ? 'Count' : number_format($countDocuments) }} {{ is_null($countDocuments) || $countDocuments >= 2 ? 'documents' : 'document' }}
+                    </button>
+                    <img style="margin-left: 5px" wire:loading.delay src="{{ asset('loading.gif') }}" height="31" alt="">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="justify-content-end input-group mb-2 mt-2">
+                    <button wire:click="changeViewType('table')" class="btn btn-sm {{ $viewType == 'table' ? 'btn-primary' : 'btn-light' }}">Table View</button>
+                    <button wire:click="changeViewType('json')" class="btn btn-sm {{ $viewType == 'json' ? 'btn-primary' : 'btn-light' }}">Json View</button>
+                </div>
+            </div>
+        </div>
         <div>
             <p class="mb-2">
                 <strong>

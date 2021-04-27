@@ -12,6 +12,7 @@ use Illuminate\Support\ServiceProvider;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use Nddcoder\ObjectMapper\ObjectMapper;
+use Nddcoder\SqlToMongodbQuery\SqlToMongodbQuery;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -48,5 +49,16 @@ class AppServiceProvider extends ServiceProvider
                     return $objectMapper;
                 }
             );
+
+        $objectIdBuilder = function ($str) {
+            if (preg_match('/^[0-9a-fA-F]{24}$/', $str) || strtotime($str) == false) {
+                return new ObjectId($str);
+            }
+
+            return new ObjectId(dechex(strtotime($str)).'0000000000000000');
+        };
+
+        SqlToMongodbQuery::addInlineFunctionBuilder('ObjectId', $objectIdBuilder);
+        SqlToMongodbQuery::addInlineFunctionBuilder('Id', $objectIdBuilder);
     }
 }

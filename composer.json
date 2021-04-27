@@ -21,7 +21,7 @@
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.3",
         "nddcoder/object-mapper": "^0.0.3",
-        "nddcoder/sql-to-mongodb-query": "^0.0.4"
+        "nddcoder/sql-to-mongodb-query": "dev-master"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
