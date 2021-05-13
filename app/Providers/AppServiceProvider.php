@@ -58,9 +58,12 @@ class AppServiceProvider extends ServiceProvider
             return new ObjectId(dechex(strtotime($str)).'0000000000000000');
         };
 
+        $dateBuilderPHP8 = fn($str) => new UTCDateTime(date_create($str));
+
+        SqlToMongodbQuery::addInlineFunctionBuilder('date', $dateBuilderPHP8);
+        SqlToMongodbQuery::addInlineFunctionBuilder('ISODate', $dateBuilderPHP8);
         SqlToMongodbQuery::addInlineFunctionBuilder('ObjectId', $objectIdBuilder);
         SqlToMongodbQuery::addInlineFunctionBuilder('Id', $objectIdBuilder);
-        SqlToMongodbQuery::addInlineFunctionBuilder('ISODate', fn($str) => new UTCDateTime(date_create($str)));
         SqlToMongodbQuery::addInlineFunctionBuilder('lower', fn($str) => strtolower($str));
         SqlToMongodbQuery::addInlineFunctionBuilder('upper', fn($str) => strtoupper($str));
     }

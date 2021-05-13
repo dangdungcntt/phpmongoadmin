@@ -16,8 +16,26 @@
                                 @php
                                     $isCurrentCollection = isset($currentCollection) ? $currentCollection == $collection['name'] : false;
                                 @endphp
-                                <li><a href="{{ route('sql-editor.collection', [$currentConnection, $database['name'], $collection['name']]) }}" style="color: {{ $currentConnection->color }};font-weight: {{ $isCurrentCollection ? '600' : '400' }}"
-                                       class="d-inline-flex align-items-center rounded {{ $isCurrentCollection ? 'active' : '' }}" @if($isCurrentCollection) aria-current="page" @endif>{{ $collection['name'] }}</a></li>
+                                <li>
+                                    @if($isCurrentCollection)
+                                        <button class="btn d-inline-flex align-items-center rounded active" data-bs-toggle="collapse" style="color: {{ $currentConnection->color }};font-weight: 600;font-size: 14px;margin-left: 25px;padding-left: 5px"
+                                                data-bs-target="#collection-{{ $collection['name'] }}" aria-expanded="false" aria-current="false">
+                                            {{ $collection['name'] }}
+                                        </button>
+                                        <div class="collapse" id="collection-{{ $collection['name'] }}">
+                                            <ul class="list-unstyled fw-normal pb-1">
+                                                @foreach($collection['indexes'] as $index)
+                                                    <li style="padding-left: 50px">
+                                                        <small style="color: {{ $currentConnection->color }}">{{ $index['name'] }}</small>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @else
+                                        <a href="{{ route('sql-editor.collection', [$currentConnection, $database['name'], $collection['name']]) }}" style="color: {{ $currentConnection->color }};font-weight: {{ $isCurrentCollection ? '600' : '400' }}"
+                                           class="d-inline-flex align-items-center rounded">{{ $collection['name'] }}</a>
+                                    @endif
+                                </li>
                             @endforeach
                         </ul>
                     </div>

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use MongoDB\Client;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\DatabaseInfo;
+use MongoDB\Model\IndexInfo;
 use Nddcoder\SqlToMongodbQuery\Model\Aggregate;
 use Nddcoder\SqlToMongodbQuery\Model\FindQuery;
 use Nddcoder\SqlToMongodbQuery\Model\Query;
@@ -47,36 +48,31 @@ class Connection extends Model
 
     public function getDatabasesAttribute()
     {
+        $mongoClient = $this->getMongoClient();
         return Cache::remember(
             'connection_databases_'.$this->id,
-            300,
-            function () {
-                $mongoClient = $this->getMongoClient();
-                return collect($mongoClient->listDatabases())
-                    ->map(
-                        function (DatabaseInfo $databaseInfo) use ($mongoClient) {
-                            return [
-                                'name'        => $databaseInfo->getName(),
-                                'sizeOnDisk'  => $databaseInfo->getSizeOnDisk(),
-                                'empty'       => $databaseInfo->isEmpty(),
-                                'collections' => collect(
-                                    $mongoClient->selectDatabase(
-                                        $databaseInfo->getName()
-                                    )->listCollections()
-                                )
-                                    ->map(
-                                        function (CollectionInfo $collectionInfo) {
-                                            return [
-                                                'name' => $collectionInfo->getName(),
-                                            ];
-                                        }
-                                    )
-                                    ->sortBy('name')
-                            ];
-                        }
-                    )
-                    ->sortBy('name');
-            }
+            600,
+            fn() => collect($mongoClient->listDatabases())
+                ->map(fn(DatabaseInfo $databaseInfo) => [
+                    'name'        => $databaseInfo->getName(),
+                    'sizeOnDisk'  => $databaseInfo->getSizeOnDisk(),
+                    'empty'       => $databaseInfo->isEmpty(),
+                    'collections' => collect($mongoClient->selectDatabase($databaseInfo->getName())->listCollections())
+                        ->map(fn(CollectionInfo $collectionInfo) => [
+                            'name'    => $collectionInfo->getName(),
+                            'indexes' => collect($mongoClient->selectCollection($databaseInfo->getName(),
+                                $collectionInfo->getName())->listIndexes())
+                                ->map(fn(IndexInfo $indexInfo) => [
+                                    'name'   => $indexInfo->getName(),
+                                    'keys'   => $indexInfo->getKey(),
+                                    'unique' => $indexInfo->isUnique(),
+                                    'text'   => $indexInfo->isText(),
+                                    'sparse' => $indexInfo->isSparse(),
+                                ])
+                        ])
+                        ->sortBy('name')
+                ])
+                ->sortBy('name')
         );
     }
 

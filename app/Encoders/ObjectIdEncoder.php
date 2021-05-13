@@ -10,8 +10,7 @@ class ObjectIdEncoder implements ObjectMapperEncoder
     public function encode(mixed $value, ?string $className = null): string
     {
         /** @var ObjectId $value */
-        $id = $value->__toString();
-        return "ObjectId(\"{$id}\")";
+        return "ObjectId(\"{$value->__toString()}\")";
     }
 
     public function decode(mixed $value, ?string $className = null): mixed
