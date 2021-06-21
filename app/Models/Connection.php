@@ -60,7 +60,7 @@ class Connection extends Model
                     'collections' => collect($mongoClient->selectDatabase($databaseInfo->getName())->listCollections())
                         ->map(fn(CollectionInfo $collectionInfo) => [
                             'name'    => $collectionInfo->getName(),
-                            'indexes' => collect($mongoClient->selectCollection($databaseInfo->getName(),
+                            'indexes' => $collectionInfo['type'] != 'collection' ? collect() : collect($mongoClient->selectCollection($databaseInfo->getName(),
                                 $collectionInfo->getName())->listIndexes())
                                 ->map(fn(IndexInfo $indexInfo) => [
                                     'name'   => $indexInfo->getName(),
