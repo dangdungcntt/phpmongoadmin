@@ -3,7 +3,7 @@
         @stack('nav-right')
     </div>
     <div class="dropdown" style="border-bottom: 1px solid #ddd">
-        <button class="btn btn-bd-light dropdown-toggle d-block" id="bd-versions" style="width: 100%"
+        <button class="btn btn-bd-light dropdown-toggle d-block" id="bd-versions" style="width: 100%;overflow: hidden"
                 data-bs-toggle="dropdown"
                 aria-expanded="false">
             {!! request()->currentConnection?->name ? request()->currentConnection->getColorBox(18) . request()->currentConnection->name : 'Connect' !!}
@@ -12,7 +12,7 @@
             @foreach($connections as $connection)
                 <li>
                     <a class="dropdown-item {{ $connection->id == optional(request()->currentConnection)->id ? 'current' : ''}}"
-                       href="{{ route('connections.show', $connection) }}">
+                       href="{{ route('connections.show', $connection) }}" style="overflow:hidden;">
                         {!! $connection->getColorBox(18) !!} {{ $connection->name }}
                     </a>
                 </li>
