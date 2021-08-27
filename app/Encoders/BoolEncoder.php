@@ -8,7 +8,7 @@ class BoolEncoder implements ObjectMapperEncoder
 {
     public function encode(mixed $value, ?string $className = null): string
     {
-        /** @var string $value */
+        /** @var bool $value */
         return $value === true ? 'true' : 'false';
     }
 
