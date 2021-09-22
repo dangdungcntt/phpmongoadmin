@@ -97,29 +97,72 @@
                     }
                 }));
 
-                let sql = editor.getSelection() || editor.getLine(editor.getCursor().line) || editor.getValue();
+                let query = getQuery().trim();
 
-                sql = sql.trim();
-
-                if (sql.startsWith('{') || sql.startsWith('[')) {
+                if (isRawMongoQuery(query)) {
                     try {
-                        sql = eval(`JSON.stringify(${sql})`)
+                        query = eval(`JSON.stringify(${query})`)
                     } catch (e) {
 
                     }
                 }
 
-                Livewire.emitTo('sql-result', 'execute', sql)
+                Livewire.emitTo('sql-result', 'execute', query)
+            }
+
+            function getQuery() {
+                let queryCandidates = [
+                    () => editor.getSelection(),
+                    () => editor.getLine(editor.getCursor().line),
+                    expandSelectionToFindQuery
+                ];
+
+                for (let candidate of queryCandidates) {
+                    let query = candidate()
+                    if (isValidQuery(query)) {
+                        return query
+                    }
+                }
+
+                return editor.getValue()
+            }
+
+            function expandSelectionToFindQuery() {
+                let currentLine = editor.getCursor().line
+
+                let values = [];
+                while (currentLine >= 0) {
+                    let line = editor.getLine(currentLine)
+                    values.unshift(line)
+                    if (isValidQuery(line)) {
+                        break;
+                    }
+                    currentLine--;
+                }
+                return values.join('\n');
+            }
+
+            function isValidQuery(query) {
+                query = query.trim()
+                return isRawMongoQuery(query) || isSelectQuery(query)
+            }
+
+            function isRawMongoQuery(query) {
+                return query.startsWith('{') || query.startsWith('[');
+            }
+
+            function isSelectQuery(query) {
+                return query.toLowerCase().startsWith('select');
             }
 
             function debounce(func, wait) {
-                var timeout;
+                let timeout;
 
                 return function() {
-                    var context = this,
+                    const context = this,
                         args = arguments;
 
-                    var executeFunction = function() {
+                    const executeFunction = function () {
                         func.apply(context, args);
                     };
 
