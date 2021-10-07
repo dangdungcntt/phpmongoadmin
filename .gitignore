@@ -14,3 +14,4 @@ yarn-error.log
 .idea
 database.sqlite
 .DS_Store
+composer.lock
