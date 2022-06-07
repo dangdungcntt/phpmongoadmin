@@ -22,15 +22,18 @@
                                                 data-bs-target="#collection-{{ $collection['name'] }}" aria-expanded="false" aria-current="false">
                                             {{ $collection['name'] }}
                                         </button>
-                                        <div class="collapse" id="collection-{{ $collection['name'] }}">
-                                            <ul class="list-unstyled fw-normal pb-1">
-                                                @foreach($collection['indexes'] as $index)
-                                                    <li style="padding-left: 50px">
-                                                        <small style="color: {{ $currentConnection->color }}">{{ $index['name'] }}</small>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
+                                        @if(!empty($indexes))
+                                            <div class="collapse" id="collection-{{ $collection['name'] }}">
+                                                <ul class="list-unstyled fw-normal pb-1">
+                                                    @foreach($indexes as $index)
+                                                        <li style="padding-left: 50px">
+                                                            <small
+                                                                style="color: {{ $currentConnection->color }}">{{ $index['name'] }}</small>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
                                     @else
                                         <a href="{{ route('sql-editor.collection', [$currentConnection, $database['name'], $collection['name']]) }}" style="color: {{ $currentConnection->color }};font-weight: {{ $isCurrentCollection ? '600' : '400' }}"
                                            class="d-inline-flex align-items-center rounded">{{ $collection['name'] }}</a>

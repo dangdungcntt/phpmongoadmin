@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Cache;
 use MongoDB\Client;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\DatabaseInfo;
-use MongoDB\Model\IndexInfo;
 use Nddcoder\SqlToMongodbQuery\Model\Aggregate;
 use Nddcoder\SqlToMongodbQuery\Model\FindQuery;
 use Nddcoder\SqlToMongodbQuery\Model\Query;
@@ -41,7 +40,7 @@ class Connection extends Model
         return parse_url($this->uri);
     }
 
-    public function getColorBox(int $size = 25)
+    public function getColorBox(int $size = 25): string
     {
         return "<span class='d-inline-block me-2' style='border-radius: 50%;vertical-align: middle;width: {$size}px;height: {$size}px;background-color: {$this->color}'></span>";
     }
@@ -59,16 +58,7 @@ class Connection extends Model
                     'empty'       => $databaseInfo->isEmpty(),
                     'collections' => collect($mongoClient->selectDatabase($databaseInfo->getName())->listCollections())
                         ->map(fn(CollectionInfo $collectionInfo) => [
-                            'name'    => $collectionInfo->getName(),
-                            'indexes' => $collectionInfo['type'] != 'collection' ? collect() : collect($mongoClient->selectCollection($databaseInfo->getName(),
-                                $collectionInfo->getName())->listIndexes())
-                                ->map(fn(IndexInfo $indexInfo) => [
-                                    'name'   => $indexInfo->getName(),
-                                    'keys'   => $indexInfo->getKey(),
-                                    'unique' => $indexInfo->isUnique(),
-                                    'text'   => $indexInfo->isText(),
-                                    'sparse' => $indexInfo->isSparse(),
-                                ])
+                            'name' => $collectionInfo->getName(),
                         ])
                         ->sortBy('name')
                 ])
