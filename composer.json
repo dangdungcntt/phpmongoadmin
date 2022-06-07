@@ -13,22 +13,21 @@
         "ext-json": "*",
         "ext-mongodb": "*",
         "doctrine/dbal": "^3.0",
-        "fideloper/proxy": "^4.4",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.5",
-        "laravel/framework": "^8.12",
+        "laravel/framework": "^9.0",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.3",
         "nddcoder/object-mapper": "^1.0",
-        "nddcoder/sql-to-mongodb-query": "dev-master"
+        "nddcoder/sql-to-mongodb-query": "^1.1.0"
     },
     "require-dev": {
-        "facade/ignition": "^2.5",
+        "spatie/laravel-ignition": "^1.0",
         "fakerphp/faker": "^1.9.1",
         "laravel/sail": "^0.0.5",
         "mockery/mockery": "^1.4.2",
-        "nunomaduro/collision": "^5.0",
+        "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.3.3"
     },
     "config": {
