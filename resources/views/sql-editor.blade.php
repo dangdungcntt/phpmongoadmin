@@ -113,7 +113,6 @@
             function getQuery() {
                 let queryCandidates = [
                     () => editor.getSelection(),
-                    () => editor.getLine(editor.getCursor().line),
                     expandSelectionToFindQuery
                 ];
 
@@ -180,17 +179,19 @@
             });
 
             const reObserver = debounce(() => {
-                observer.disconnect()
+                observer.disconnect();
+                observeAll();
+            }, 50)
+
+            Livewire.hook('element.updated', reObserver);
+
+            function observeAll() {
                 document.querySelectorAll('pre code').forEach((block) => {
                     observer.observe(block)
                 });
-            }, 100)
+            }
 
-            Livewire.hook('element.updated', reObserver)
-
-            document.querySelectorAll('pre code').forEach((block) => {
-                observer.observe(block)
-            });
+            observeAll();
 
             let linkStyleEl = document.getElementById('highlight-style-link');
             let defaultStyleLink = '{{ asset('highlightjs/styles/default.css') }}';

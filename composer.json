@@ -20,7 +20,7 @@
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.3",
         "nddcoder/object-mapper": "^1.0",
-        "nddcoder/sql-to-mongodb-query": "^1.1.0"
+        "nddcoder/sql-to-mongodb-query": "^1.1.3"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^1.0",

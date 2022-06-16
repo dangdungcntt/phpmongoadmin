@@ -167,18 +167,7 @@ class SqlResult extends Component
             );
         }
 
-        if (str_starts_with($sql, '[') && ($pipelines = json_decode($sql, true))) {
-            $pipelines = collect($pipelines)
-                ->map(function ($pipeline) {
-                    if (isset($pipeline['$match'])) {
-                        $pipeline['$match'] = BsonHelper::decode($pipeline['$match']);
-                        if (empty($pipeline['$match'])) {
-                            $pipeline['$match'] = (object) [];
-                        }
-                    }
-                    return $pipeline;
-                })
-                ->toArray();
+        if (str_starts_with($sql, '[') && ($pipelines = json_decode($sql))) {
             //Raw mongo aggregation
             return new Aggregate(
                 collection: $this->collectionName,
