@@ -113,7 +113,8 @@
             function getQuery() {
                 let queryCandidates = [
                     () => editor.getSelection(),
-                    expandSelectionToFindQuery
+                    expandSelectionDownToFindQuery,
+                    expandSelectionUpToFindQuery,
                 ];
 
                 for (let candidate of queryCandidates) {
@@ -126,17 +127,32 @@
                 return editor.getValue()
             }
 
-            function expandSelectionToFindQuery() {
+            function expandSelectionUpToFindQuery() {
                 let currentLine = editor.getCursor().line
 
                 let values = [];
                 while (currentLine >= 0) {
                     let line = editor.getLine(currentLine)
                     values.unshift(line)
-                    if (isValidQuery(line)) {
+                    if (!line || !line.trim() || isValidQuery(values.join('\n'))) {
                         break;
                     }
                     currentLine--;
+                }
+                return values.join('\n');
+            }
+
+            function expandSelectionDownToFindQuery() {
+                let values = [];
+                let maxLine = editor.lineCount();
+                let currentLine = editor.getCursor().line
+                while (currentLine <= maxLine) {
+                    let line = editor.getLine(currentLine)
+                    values.push(line)
+                    if (!line || !line.trim()) {
+                        break;
+                    }
+                    currentLine++;
                 }
                 return values.join('\n');
             }
@@ -151,7 +167,8 @@
             }
 
             function isSelectQuery(query) {
-                return query.toLowerCase().startsWith('select');
+                let q = query.toLowerCase()
+                return q.startsWith('select ') && q.includes('from');
             }
 
             function debounce(func, wait) {
